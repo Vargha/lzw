@@ -3,24 +3,21 @@
 
 #include <stdio.h>
 #include <stdbool.h>
-#include <string.h>
 
-typedef struct _bits
-{
-  unsigned int extraBits;
-  unsigned int bitCount;
-  FILE* fd;
+typedef struct _bits{
+    unsigned int extraBits;
+    unsigned int bitCount;
+    FILE* fd;
 } Bits;
 
-Bits* newBits (FILE* fd);
+Bits* newBits(FILE* fd);
 
-void deleteBits (Bits* bt);
+void deleteBits(Bits* b);
 
-bool readBits(Bits* bt, unsigned int nBits, unsigned int* count);
+bool readBits(Bits* b, unsigned int *bits, unsigned int count);
 
-bool writeBits(Bits* bt, unsigned int nBits, unsigned int count);
+bool writeBits(Bits* b, unsigned int bits, unsigned int count);
 
-bool flushBits(Bits* bt);
-
+bool flushBits(Bits* b);
 
 #endif

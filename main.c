@@ -3,11 +3,12 @@
 
 int main(int argc, char* argv[])
 {
+	unsigned int nextCode = 256;											// The first available block for the next code
 	char inpFlg = 'N';																// Flag for input file existence
 	char outFlg = 'N';																// Flag for output file existence
 	char inputFile[200];
 	char outputFile[200];
-	char	mode;																				// Encode / Decode flag
+	char	mode = 'V';																	// Encode / Decode flag
 
 
   if (argc<2 || 6<argc)															// If wrong number of command line arguments
@@ -19,15 +20,15 @@ int main(int argc, char* argv[])
 		{
 			cmdHelp();
 		}
-		else if (strcmp(argv[1],"-encode") == 0)					// Compress/Encode the file
+		else if (strcmp(argv[1],"-encode") == 0)				// Encode the file
     {
 			mode = 'E';
 		}
-		else if (strcmp(argv[1],"-decode") == 0) 				// Decompress/Dencode the file
+		else if (strcmp(argv[1],"-decode") == 0) 				// Dencode the file
     {
 			mode = 'D';
 		}
-		else																						// if enything other than -encode or -decode
+		else																						// if wrong command
 			cmdWarning();								
 	}
 
@@ -67,8 +68,47 @@ int main(int argc, char* argv[])
 		}
 	}
 
-
-//  Bits* b = newBits(stdin);
+	/* Running user's request based on the command line info */
+	/* *** INPUT HANDELING *** */
+	FILE* inFile;
+	if (inpFlg == 'Y')																	// if from an input file
+	{
+		inFile = fopen(inputFile, "r");										// Reading an input file
+		if(inFile == NULL) 
+		{
+			printf (ANSI_COLOR_RED  "ERROR: "  ANSI_COLOR_RESET);
+			printf ("\tUnable to open file.\n");
+		}
+	}
+	else if (inpFlg == 'N')															// if from stdin
+	{
+		inFile = stdin;
+	}
+	
+	/* *** OUTPUT HANDELING *** */
+	FILE* outFile;
+	if (outFlg == 'Y')																	// if from an input file
+	{
+		outFile = fopen(outputFile, "w");									// Reading an input file
+		if(inFile == NULL) 
+		{
+			printf (ANSI_COLOR_RED  "ERROR: "  ANSI_COLOR_RESET);
+			printf ("\tUnable to open file.\n");
+		}
+	}
+	else if (outFlg == 'N')															// if to stdout
+	{
+		outFile = stdout;
+	}
+	
+	if (mode == 'E')
+	{
+		encode(inFile, outFile);
+	}
+	else																								// if (mode == 'D')
+	{
+		decode(inFile, outFile);
+	}
 
   return 0;
 }
@@ -76,7 +116,10 @@ int main(int argc, char* argv[])
 
 
 
-/*****************************************************************************************/
+/* **********  FUNCTIONS ********** */
+
+
+/* **********  ERRORS & WARNINGS & HELP ********** */
 void cmdHelp() 	                            			// If user wants to see the help message
 {
 	printf("Usage:\t./lzw <option1> <option2>...  <optionN>\n\n");
@@ -96,10 +139,10 @@ void cmdHelp() 	                            			// If user wants to see the help 
 
 void cmdError()																		// Improper use of command line arguments
 {
-printf (ANSI_COLOR_RED  "ERROR: "  ANSI_COLOR_RESET);
-				printf ("\tImproper use of command line arguments.\n\tUse ");
-				printf (ANSI_COLOR_GREEN  "./lzw -help"  ANSI_COLOR_RESET);
-				printf(" command for help. \n\n");
+	printf (ANSI_COLOR_RED  "ERROR: "  ANSI_COLOR_RESET);
+	printf ("\tImproper use of command line arguments.\n\tUse ");
+	printf (ANSI_COLOR_GREEN  "./lzw -help"  ANSI_COLOR_RESET);
+	printf(" command for help. \n\n");
 	return;
 }
 
