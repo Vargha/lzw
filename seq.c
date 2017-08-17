@@ -26,28 +26,31 @@ Seq* concatSeq(Seq* oldSeq, char newChar)							// w Concatinated with c
 	newSeq->count = oldSeq->count + 1;
 	memcpy (newSeq->data, oldSeq->data, oldSeq->count);	// memcpy(dest, src, length-in-bytes);
 	newSeq->data[newSeq->count-1] = newChar;						// appending the character to end of data
-	delSeq(oldSeq);																			// Free the memory
+	//delSeq(oldSeq);																		// Free the memory
 	return newSeq;
 }
 
-/* ********** CONCATINATE SEQUENCE ********** */
+/* ********** CONPY SEQUENCE ********** */
 void copySeq(Seq* x, Seq* w)													// copy x on w
 {
-	free(w->data);																			// free the memory, by deleting the old data
-	w->data = malloc(x->count);													// allocate memory for the new data			
-	memcpy(w->data, x->data, x->count);									// Now, copy x->data to w->data
+	//free(w->data);																		// free the memory, by deleting the old data
+	Seq* temp = malloc(sizeof(Seq));
+	//w = malloc(sizeof(Seq));
+	temp->data = malloc(x->count);											// allocate memory for the new data			
+	memcpy(temp->data, x->data, x->count);							// Now, copy x->data to w->data
+	temp->count = x->count;
+	w=temp;
 	return;
 }
 
 /* ********** COMPARE TWO SEQUENCES FOR EQUALITY ********** */
 char compareSeq(Seq* firstSeq, Seq* secondSeq)
-{// identicalSequence
-	if(firstSeq->count != b->count)											// if they have a different length, return Not equal
-		return 'N';
+{
+	if(firstSeq->count != secondSeq->count)				return 'N';	// if they have a different length, return Not equal
 	int i=0;																						// index counter
-	while(i < secondSeq->count)
+	while(i < firstSeq->count)
 	{
-		if(a->bytes[i] != b->bytes[i])	return 'N';				// if any of the characters are not equal, they are Not equal
+		if(firstSeq->data[i] != secondSeq->data[i])	return 'N';	// if any of the characters are not equal, they are Not equal
 		i++;
 	}
 	return 'E';																					// if it passes all conditions, then sequences are equal
@@ -56,11 +59,15 @@ char compareSeq(Seq* firstSeq, Seq* secondSeq)
 /* ********** RETURN THE FIRST CHARACTER OF THE SEQUENCE ********** */
 unsigned char firstInSequence(Seq* sequence)					// This was in Dr. Lang's header file, but not sure if I'm going to use it
 {
-	return (sequence->bytes[0]);
+	return (sequence->data[0]);
 }
 
-
-
-
+void printSeq(Seq* seq, FILE* outFile)								// print the sequence to screen / file
+{
+	for(int i=0; i < seq->count; i++)
+	{
+		fputc(seq->data[i], outFile);
+	}
+}
 
 

@@ -1,1 +1,13 @@
-LZW compression is the compression of a file into a smaller file using a table-based lookup algorithm invented by Abraham Lempel, Jacob Ziv, and Terry Welch. Two commonly-used file formats in which LZV compression is used are the GIF image format served from Web sites and the TIFF image format.
+LZW compression
+CS360 - Programming Assignment 1
+
+Program Language:		C
+Programmed by: 			Vargha Hokmran
+
+Using instruction:
+	To compile:	Open the source folder and type make and press enter
+	To run:			Type ./lzw -help and follow the instruction
+
+Note:
+	Please note that the code and its comments are set to 2 spaces per tag,
+	and this would be the best organized setting to read the code

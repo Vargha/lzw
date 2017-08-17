@@ -2,34 +2,34 @@
 
 /* ********** CREATE THE DICTIONARY ********** */
 Dict* createDict(unsigned int hashMax)
-{// newDict
+{
 	Dict* myDict = malloc(sizeof(Dict));
-	myDict->table=calloc(hashSize,sizeof(DictData*));
-	for (int i=0; i<256; i++)																							// create one sequence for each dictionary element
+	myDict->dataTbl=calloc(hashMax,sizeof(DictData*));
+	for (int code=0; code<256; code++)																		// create one sequence for each dictionary element
 	{
-		Seq* mySeq = createSequence(i);
-		addToDict(myDict, mySeq, hashCode);																	// add a element into the created dictionary
+		Seq* mySeq = createSeq(code);
+		addToDict(myDict, mySeq, code);																			// add a element into the created dictionary
 	}
 	return myDict;
 }
 
 /* ********** ADD TO DICTIONARY ********** */
-void addToDict(Dict* myDict, Seq* mySeq, unsigned int hashCode)
-{// insertDict
-	unsigned int hash = bernHash(mySeq, HASHMAX);													// Create the hash
-	DictData* entry = newEntry(mySeq,Code);
-	entry->next = dict->table[hash];
-	dict->table[hash] = entry;
+void addToDict(Dict* myDict, Seq* mySeq, unsigned int code)
+{
+	unsigned int bh = bernHash(mySeq, HASHMAX);														// Create the hash
+	DictData* data = newEntry(mySeq,code);
+	data->next = myDict->dataTbl[bh];
+	myDict->dataTbl[bh] = data;
 }
 
 /* ********** BENRSTEIN'S HASH ********** */
 unsigned int bernHash(Seq* mySeq, unsigned int myMod)										// the modulus value in this case is HASHMAX
-{// hashSequence
+{
 	unsigned int myHash=5381;																							// Cool: 5381 is 709th prime (Bernstein Hash's magic Number)
 	int c;
 	for (int i=0; i<(mySeq->count); i++)
 	{
-		c = mySeq->bytes[i];
+		c = mySeq->data[i];
 		myHash = ((myHash << 5) + myHash) + c;
 	}
 	myHash=myHash%myMod;
@@ -38,8 +38,8 @@ unsigned int bernHash(Seq* mySeq, unsigned int myMod)										// the modulus va
 
 /* ********** DICTIONARY DATA ********** */
 DictData* newEntry(Seq* seq, unsigned int code)													// Dictionary data (dictionary entry)
-{// DictEntry
-	DictData* result = (DictData*) malloc(sizeof(DictEntry));							// allocate memory for this dictionary data
+{
+	DictData* result = (DictData*) malloc(sizeof(DictData));							// allocate memory for this dictionary data
 	result->key = seq;																										// result is a DictData
 	result->code = code;
 	result->next = NULL;																									// No next node yet
@@ -47,7 +47,7 @@ DictData* newEntry(Seq* seq, unsigned int code)													// Dictionary data (
 }
 
 /* ********** CHECK DICTIONARY FOR A SEQUENCE ********** */
-char checkExist(Dict* dict, Seq* seq, unsigned int* codePointer){
+char checkExist(Seq* seq, unsigned int* codePointer, Dict* dict){
 	unsigned int bh = bernHash(seq, HASHMAX);															// bh is the index for the dictionary array, based on the seq
 	DictData* myData = dict->dataTbl[bh];
 	while(myData)																													// while there is more
@@ -64,12 +64,11 @@ char checkExist(Dict* dict, Seq* seq, unsigned int* codePointer){
 
 /* ********** DELETE THE ENTIRE DICTIONARY ********** */
 void killDict(Dict* dict)																								// to free the allocate memory
-{// deleteDictDeep
-	DictDATA* dd = NULL;																									// a temporary dictionary data to hold data while removing
-	int i = 0;
+{
+	DictData* dd = NULL;																									// a temporary dictionary data to hold data while removing
 	for(int i=0; i<HASHMAX; i++)																					// go through the dictionaty and delete data
 	{
-		while((dict->table[i]) != NULL)
+		while((dict->dataTbl[i]) != NULL)
 		{
 			dd = dict->dataTbl[i]->next;																			// hold the next DictData in a temporary spot to not lose it after delete
 			delSeq(dict->dataTbl[i]->key);																		// delete the sequence
@@ -81,3 +80,29 @@ void killDict(Dict* dict)																								// to free the allocate memory
 	free(dict);																														// free the allocated memory for the dictionary now
 }
 
+/* ********** INSERT SEQUENCE INTO THE DICTIONARY ********** */
+void insertSeq(Seq* seq, unsigned int code, Dict* dict)									// Insert a sequence into the dictionary
+{
+	unsigned int hash = bernHash(seq, HASHMAX);														// hash the sequence based on the sequence
+	DictData* dd = newEntry(seq,code);
+	dd->next = dict->dataTbl[hash];
+	dict->dataTbl[hash] = dd;
+}
+
+/* ********** DELETE THE ENTIRE DICTIONARY ********** */
+void decDicDel(Dict* dict, int tblSize)																	// Unallocate the memory for the decoding dictionary
+{
+	DictData* temp = NULL;
+	for(int i=0; i<HASHMAX; i++)
+	{
+		while((dict->dataTbl[i]) != NULL)
+		{
+			temp = dict->dataTbl[i]->next;
+			delSeq(dict->dataTbl[i]->key);
+			free(dict->dataTbl[i]);
+			dict->dataTbl[i]=temp;
+		}	
+	}
+	free(dict->dataTbl);
+	free(dict);	
+}

@@ -3,7 +3,6 @@
 
 int main(int argc, char* argv[])
 {
-	unsigned int nextCode = 256;											// The first available block for the next code
 	char inpFlg = 'N';																// Flag for input file existence
 	char outFlg = 'N';																// Flag for output file existence
 	char inputFile[200];
@@ -44,12 +43,10 @@ int main(int argc, char* argv[])
 		{
 			inpFlg = 'Y';																	// There exist and inputFile
 			strcpy(inputFile, argv[3]);
-			printf ("\t\tCommand: ./lzw <-encode> <-input> <address>\n\n");
 		}else if (strcmp(argv[2],"-output") == 0)
 		{
 			outFlg = 'Y';																	// There exist and outputFile
 			strcpy(outputFile, argv[3]);
-			printf ("\t\tCommand: ./lzw <-encode> <-outnput> <address>\n\n");
 		}
 	}
 
@@ -59,12 +56,10 @@ int main(int argc, char* argv[])
 		{
 			inpFlg = 'Y';																	// There exist and inputFile
 			strcpy(inputFile, argv[5]);
-			printf ("\t\tCommand: ./lzw <-encode> <-input/-output> <address>  <-input> <address>\n\n");
 		}else if (strcmp(argv[4],"-output") == 0)
 		{
 			outFlg = 'Y';																	// There exist and outputFile
 			strcpy(outputFile, argv[5]);
-			printf ("\t\tCommand: ./lzw <-encode> <-input/-output> <address>  <-output> <address>\n\n");
 		}
 	}
 
@@ -73,7 +68,7 @@ int main(int argc, char* argv[])
 	FILE* inFile;
 	if (inpFlg == 'Y')																	// if from an input file
 	{
-		inFile = fopen(inputFile, "r");										// Reading an input file
+		inFile = fopen(inputFile, "rb");										// Reading an input file
 		if(inFile == NULL) 
 		{
 			printf (ANSI_COLOR_RED  "ERROR: "  ANSI_COLOR_RESET);
@@ -105,9 +100,13 @@ int main(int argc, char* argv[])
 	{
 		encode(inFile, outFile);
 	}
-	else																								// if (mode == 'D')
+	else if (mode == 'D')																// if (mode == 'D')
 	{
 		decode(inFile, outFile);
+	}
+	else
+	{
+		cmdError();																				// if not encode nor decode mode
 	}
 
   return 0;
@@ -115,9 +114,7 @@ int main(int argc, char* argv[])
 
 
 
-
 /* **********  FUNCTIONS ********** */
-
 
 /* **********  ERRORS & WARNINGS & HELP ********** */
 void cmdHelp() 	                            			// If user wants to see the help message
